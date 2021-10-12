@@ -37,7 +37,7 @@ settings.agentPositionFilename = ''; % full filename to file containing at
 
 % established are 'standard' and 'random' (28.11.)
 settings.wallPositionStyle = 'standard';
-settings.wallPositionFilename = '';% full filename to file containing at
+settings.wallPositionFilename = 'walls.mat';% full filename to file containing at
                                     % least the variable columns
 
 

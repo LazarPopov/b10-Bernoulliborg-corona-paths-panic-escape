@@ -9,7 +9,7 @@ ylim([0, yMax]);
 NAgents = size(agents, 1);
 NWalls = size(columns, 1);
 NWallLines = size(wallLines, 1);
-NExits =(exitCoord);
+NExits =size(exitCoord,1);
 hAgents = zeros(1,NAgents);
 
 for j = 1:NAgents    
