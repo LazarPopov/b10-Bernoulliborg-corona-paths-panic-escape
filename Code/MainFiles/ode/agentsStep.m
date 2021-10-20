@@ -9,11 +9,18 @@ agents = simulationObj.agents;
 t = simulationObj.tSimulation;
 columns = simulationObj.columns;
 wallLines = simulationObj.wallLines;
-if size(simulationObj.exitCoord) > 1
+c = clock
+rng(c(6),'twister');
+disp(size(simulationObj.exitCoord,1))
+if size(simulationObj.exitCoord,1) > 1
+  r = randi([1, size(simulationObj.exitCoord,1)],1);
+  disp('r')
+  disp(r)
+
   disp('agentsStep IF')
   disp('simulationObj.exitCoord(1,:)')
   disp(simulationObj.exitCoord(1,:))
-  exitCoord = simulationObj.exitCoord(2,:)
+  exitCoord = simulationObj.exitCoord(r,:)
 else
   disp('agentsStep ELSE')
   disp('simulationObj.exitCoord')
@@ -43,6 +50,9 @@ if pressureBool
 else
     [tVec, odeAgents, TE, ~, IE] = ode23(@(t,y)odeRhs(t,y,radii,columns,wallLines,exitCoord,settings),[t,t+dt],odeVec,odeOptions); %solve ODE with 'ode23'
 end
+
+disp(agents(:,1:4));
+
 agents(:,1:4) = reshape(odeAgents(end,:),NAgent,4); %uptate 'agents' matrix
 timesAgentsThroughDoor = TE(IE <= NAgent);
 allThroughDoor = any(IE == NAgent + 1);

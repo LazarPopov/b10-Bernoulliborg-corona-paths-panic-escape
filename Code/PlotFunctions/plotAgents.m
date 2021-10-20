@@ -32,9 +32,25 @@ end
 disp('exitCoord')
 disp(exitCoord)
 
-hExit = plotExitLine([exitCoord(1), exitCoord(3)], [exitCoord(2), exitCoord(4)]);
-set(hExit(1), 'UserData', [4, hExit(2)]);
-set(hExit(2), 'UserData', [4, hExit(1)]);
+disp('size(exitCoord,1)')
+disp(size(exitCoord,1))
+
+NExitLines = size(exitCoord)
+
+for j = 1:NExitLines
+  hExit = plotExitLine([exitCoord(j, 1), exitCoord(j, 3)], [exitCoord(j, 2), exitCoord(j, 4)]);
+  set(hExit(1), 'UserData', [4, hExit(2)]);
+  set(hExit(2), 'UserData', [4, hExit(1)]);
+end
+
+
+% if size(exitCoord) > 1
+%   hExit = plotExitLine([exitCoord(2, 1), exitCoord(2, 3)], [exitCoord(2, 2), exitCoord(2, 4)]);
+% else
+%   hExit = plotExitLine([exitCoord(1), exitCoord(3)], [exitCoord(2), exitCoord(4)]);
+% end
+% set(hExit(1), 'UserData', [4, hExit(2)]);
+% set(hExit(2), 'UserData', [4, hExit(1)]);
 
 
 end

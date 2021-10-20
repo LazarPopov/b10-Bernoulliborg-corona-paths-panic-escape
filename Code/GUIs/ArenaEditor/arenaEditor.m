@@ -73,8 +73,16 @@ set([hAgents(:); hColumns(:); hWallLines(:); hExit(:)],'ButtonDownFcn', @objectB
 handles.currentAgentId = 0;
 handles.currentWallId = 0;
 handles.currentWallLineId = 0;
+handles.currentExitId = 0;
+disp('handles')
+disp(handles)
+%adding exit id
+
+
+
 handles.settings = settings;
 handles.simulationObj = simulationObj;
+disp(handles.simulationObj)
 handles.plotObj = plotObj;
 handles.handlesMain = handlesMain;
 handles.oldTool = 'modifyObjectTool';
@@ -253,16 +261,32 @@ if filterIndex ~= 0
             handles.plotObj.hColumns = hColumns;
             NWallLines = size(wallLines, 1);
             hWallLines = zeros(1, NWallLines);
-            for j = 1:NWallLines
-                hWallLines(j) = plotWallLine([wallLines(j,1), wallLines(j,3)], [wallLines(j,2), wallLines(j,4)]);
-                set(hWallLines(j), 'UserData', [3,j]);
+            disp(size(exitCoord))
+            disp(size(exitCoord,1))
+
+
+            NExitLines = size(exitCoord)
+
+            for j = 1:NExitLines
+              hExit = plotExitLine([exitCoord(j, 1), exitCoord(j, 3)], [exitCoord(j, 2), exitCoord(j, 4)]);
+              set(hExit(1), 'UserData', [4, hExit(2)]);
+              set(hExit(2), 'UserData', [4, hExit(1)]);
             end
 
-            handles.plotObj.hWallLines = hWallLines;
 
-            hExit = plotExitLine([exitCoord(1), exitCoord(3)], [exitCoord(2), exitCoord(4)]);
-            set(hExit(1), 'UserData', [4, hExit(2)]);
-            set(hExit(2), 'UserData', [4, hExit(1)]);
+            % if size(exitCoord) > 1
+            %   hExit = plotExitLine([exitCoord(2, 1), exitCoord(2, 3)], [exitCoord(2, 2), exitCoord(2, 4)]);
+            % else
+            %   hExit = plotExitLine([exitCoord(1), exitCoord(3)], [exitCoord(2), exitCoord(4)]);
+            % end
+            % set(hExit(1), 'UserData', [4, hExit(2)]);
+            % set(hExit(2), 'UserData', [4, hExit(1)]);
+
+
+
+
+
+
 
             if strcmp(handles.oldTool, 'modifyObjectTool')
                 set([hColumns(:); hWallLines(:); hExit(:)],'ButtonDownFcn', @objectButtonDown);
