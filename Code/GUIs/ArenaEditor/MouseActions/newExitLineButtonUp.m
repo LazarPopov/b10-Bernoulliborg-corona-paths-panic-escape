@@ -14,11 +14,6 @@ newExitLine =  [startPoint, endPoint];
 
 handles.simulationObj.exitCoord = [handles.simulationObj.exitCoord; newExitLine];
 
-disp('handles.simulationObj.exitCoord')
-disp(handles.simulationObj.exitCoord)
-disp('handles.simulationObj.exitCoord(1, :)')
-disp(handles.simulationObj.exitCoord(1,:))
-
 % store wall id in wall drawings
 hNewExitLine = handles.temp.hExit;
 handles.plotObj.hExit = [handles.plotObj.hExit,hNewExitLine];

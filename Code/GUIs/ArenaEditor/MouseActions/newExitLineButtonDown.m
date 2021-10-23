@@ -11,8 +11,6 @@ if strcmp(clickStyle, 'normal')
 
     startPoint = get(gca,'CurrentPoint');
     startPoint = startPoint(1,[1,2]);
-    disp('startPoint')
-    disp(startPoint)
     hExit = plotExitLine([startPoint(1), startPoint(1)], [startPoint(2), startPoint(2)]);
 
 

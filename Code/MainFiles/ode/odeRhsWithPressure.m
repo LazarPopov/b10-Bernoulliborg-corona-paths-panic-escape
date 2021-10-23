@@ -6,7 +6,7 @@ function out = odeRhsWithPressure(~,odeVec,radii,columns,wallLines, exitCoord, s
 %   also calculates pressure and stores it directly through guiData
 %   therefore slower than odeRhs
 %
-%   input: initial state vector odeVec, agent radii, columns, wallLines, 
+%   input: initial state vector odeVec, agent radii, columns, wallLines,
 %           exit coordinates, settings and handle to main figure
 %
 %   initial state vector 'odeVec' is a row vector:
@@ -32,6 +32,21 @@ x1Aims = repmat(exitCoord(1),NAgent,1); % x1w = wallLines(:,1);
 y1Aims = repmat(exitCoord(2),NAgent,1);% y1w = wallLines(:,2);
 x2Aims = repmat(exitCoord(3),NAgent,1);% x2w = wallLines(:,3);
 y2Aims = repmat(exitCoord(4),NAgent,1);% y2w = wallLines(:,4);
+
+
+% x1Aims(end+1) = 15;
+% y1Aims(end+1) = 6.5;
+% x2Aims(end+1) = 15;
+% y2Aims(end+1) = 6.5;
+% x1Aims = repmat(exitCoord(1),NAgent-1,1); % x1w = wallLines(:,1);
+% y1Aims = repmat(exitCoord(2),NAgent-1,1);% y1w = wallLines(:,2);
+% x2Aims = repmat(exitCoord(3),NAgent-1,1);% x2w = wallLines(:,3);
+% y2Aims = repmat(exitCoord(4),NAgent-1,1);% y2w = wallLines(:,4);
+%
+% x1Aims(end+1) = 15;
+% y1Aims(end+1) = 6.5;
+% x2Aims(end+1) = 15;
+% y2Aims(end+1) = 6.5;
 
 nx = -y2Aims + y1Aims;
 ny = x2Aims - x1Aims;
@@ -121,12 +136,12 @@ if any(touching(:))
     [mesh1vY, mesh2vY] = meshgrid(agents(:,4),agents(:,4));
     velocityMatrixX = mesh1vX-mesh2vX; % velocity difference matrix in x direction
     velocityMatrixY = mesh1vY-mesh2vY; % velocity difference matrix in y direction
-    
-    body = k*deltaij.*touching;    
-    
+
+    body = k*deltaij.*touching;
+
     bodyX = body.*nxij;
     bodyY = body.*nyij;
-    
+
     radialForceMatrix = body;
 
     sliding = kappa*deltaij.*touching.*(-velocityMatrixX.*nyij + velocityMatrixY.*nxij);
@@ -136,7 +151,7 @@ if any(touching(:))
 
     forceMatrixX = forceMatrixX + bodyX + slidingX;
     forceMatrixY = forceMatrixY + bodyY + slidingY;
-    
+
     radialForceVec = sum(radialForceMatrix, 2);
 end
 
@@ -255,7 +270,7 @@ if NWallLines > 0
     touching = sparse(deltaij > 0);
     if any(touching(:))
         body = k*deltaij.*touching;
-        
+
         radialForceMatrix = body;
 
         bodyX = body.*nxij;
@@ -284,6 +299,3 @@ out = [odeVec(2*NAgent+1:4*NAgent);agentForceVecX./mass;agentForceVecY./mass]; %
 handles.simulationObj.pressure = radialForceVec./(2*pi*radii);
 guidata(hObject, handles);
 end
-
-
-

@@ -15,10 +15,6 @@ exitCoord = handles.simulationObj.exitCoord;
 exitCoord([1 3]) = exitCoord([1 3]) + xyDiff(1);
 exitCoord([2 4]) = exitCoord([2 4]) + xyDiff(2);
 handles.simulationObj.exitCoord = exitCoord;
-disp('button up handles.simulationObj.exitCoord')
-
-disp(handles.simulationObj.exitCoord)
-
 
 % delete temporary field 'temp' in handles
 handles = rmfield(handles, 'temp');

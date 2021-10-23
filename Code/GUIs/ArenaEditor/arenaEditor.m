@@ -74,15 +74,13 @@ handles.currentAgentId = 0;
 handles.currentWallId = 0;
 handles.currentWallLineId = 0;
 handles.currentExitId = 0;
-disp('handles')
-disp(handles)
 %adding exit id
 
 
 
 handles.settings = settings;
 handles.simulationObj = simulationObj;
-disp(handles.simulationObj)
+
 handles.plotObj = plotObj;
 handles.handlesMain = handlesMain;
 handles.oldTool = 'modifyObjectTool';
@@ -261,11 +259,8 @@ if filterIndex ~= 0
             handles.plotObj.hColumns = hColumns;
             NWallLines = size(wallLines, 1);
             hWallLines = zeros(1, NWallLines);
-            disp(size(exitCoord))
-            disp(size(exitCoord,1))
 
-
-            NExitLines = size(exitCoord)
+            NExitLines = size(exitCoord, 1)
 
             for j = 1:NExitLines
               hExit = plotExitLine([exitCoord(j, 1), exitCoord(j, 3)], [exitCoord(j, 2), exitCoord(j, 4)]);

@@ -22,15 +22,11 @@ mass = density.*pi.*radii.^2;
 %---accelI force-----------------------------------------------------------
 
 % calculate desired, nearest x, y coordinates for each agents towards door
-
-disp('odeRhs')
-disp(exitCoord)
-disp(NAgent)
-
 x1Aims = repmat(exitCoord(1),NAgent,1); % x1w = wallLines(:,1);
 y1Aims = repmat(exitCoord(2),NAgent,1);% y1w = wallLines(:,2);
 x2Aims = repmat(exitCoord(3),NAgent,1);% x2w = wallLines(:,3);
 y2Aims = repmat(exitCoord(4),NAgent,1);% y2w = wallLines(:,4);
+
 
 nx = -y2Aims + y1Aims;
 ny = x2Aims - x1Aims;

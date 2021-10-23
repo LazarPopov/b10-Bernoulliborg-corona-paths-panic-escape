@@ -29,12 +29,6 @@ for j = 1:NWallLines
     set(hWallLines(j), 'UserData', [3,j]);
 end
 
-disp('exitCoord')
-disp(exitCoord)
-
-disp('size(exitCoord,1)')
-disp(size(exitCoord,1))
-
 NExitLines = size(exitCoord)
 
 for j = 1:NExitLines
