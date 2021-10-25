@@ -28,9 +28,56 @@ NExits = size(simulationObj.exitCoord,1)
 
 
 
+%%%%%%%%%%%% TRYING TO MAKE THE CHOICE WITH A FOR LOOP FOR ARBITRARY NUMBER OF EXITS
+
+%Having 2 exits chosen by different agents
+% testGrid = ndgrid(agents1,agents2)
+%
+% disp(testGrid)
+% %
+% disp('size(testGrid)')
+% disp(size(testGrid))
+% %the seperation should be made in the for loop at each iteration
+% %closest agents to the jth exit
+% %therefore we need a function that determines the agent
+% for j = 1:NExits
+%     currentExit = simulationObj.exitCoord( j,:);
+%     closestAgents = 0;
+%     NClosestAgents =  size(closestAgents);
+%
+%     odeVec = reshape(closestAgents(:,1:4),4*NClosestAgents,1); %create 'odeVec' initial state column vector (with radius)
+%     radii = closestAgents(:,5);
+%     odeOptions = odeset('AbsTol',1e-2,'RelTol',1e-2, 'Events',@(t,y) odeEventFunction(t,y,currentExit)); % RelTol: measure of error relative to size of each solution component. Default is 1e-3
+%     disp('test5')
+%     if pressureBool
+%         [tVec, odeAgents, TE, ~, IE] = ode23(@(t,y)odeRhsWithPressure(t,y,radii,columns,wallLines,currentExit,settings, hObject),[t,t+dt],odeVec,odeOptions); %solve ODE with 'ode23'
+%         handles = guidata(hObject);
+%         simulationObj.pressure = handles.simulationObj.pressure;
+%     else
+%         disp('5.1');
+%         [tVec, odeAgents, TE, ~, IE] = ode23(@(t,y)odeRhs(t,y,radii,columns,wallLines,currentExit,settings),[t,t+dt],odeVec,odeOptions); %solve ODE with 'ode23'
+%         disp('TE1')
+%         disp(TE)
+%         disp('IE1')
+%         disp(IE)
+%   end
+% end
+% agents1(:,1:4) = reshape(odeAgents(end,:),NAgent1,4); %uptate 'agents' matrix
+% agents2(:,1:4) = reshape(odeAgents2(end,:),NAgent2,4); %uptate 'agents' matrix
+% timesAgentsThroughDoor = TE(IE <= NAgent1);
+% allThroughDoor = any(IE == NAgent1 + 1);
+% simulationObj.tSimulation = tVec(end);
+% disp('test7')
+% size(agents1)
+% size(agents2)
+% simulationObj.agents = cat(1,agents1,agents2);
+% disp(simulationObj.agents)
+% simulationObj.allThroughDoor = allThroughDoor;
+% disp('test8')
+% simulationObj.timesAgentsThroughDoor = [simulationObj.timesAgentsThroughDoor; timesAgentsThroughDoor];
 
 
-
+%%%%% IF THERE IS MORE THAN 1 EXITS
 if size(simulationObj.exitCoord,1) > 1
   half=NAgent/2
 
@@ -49,29 +96,6 @@ if size(simulationObj.exitCoord,1) > 1
   exitCoord2 = simulationObj.exitCoord( 2,:)
 
   disp('test4')
-  %Having 2 exits chosen by different agents
-  %
-  % for j = 1:NExits
-  %     odeVec = reshape(agents1(:,1:4),4*NAgent1,1); %create 'odeVec' initial state column vector (with radius)
-  %     radii = agents1(:,5);
-  %     odeOptions = odeset('AbsTol',1e-2,'RelTol',1e-2, 'Events',@(t,y) odeEventFunction(t,y,simulationObj.exitCoord( j,:))); % RelTol: measure of error relative to size of each solution component. Default is 1e-3
-  %     disp('test5')
-  %     if pressureBool
-  %         [tVec, odeAgents, TE, ~, IE] = ode23(@(t,y)odeRhsWithPressure(t,y,radii,columns,wallLines,simulationObj.exitCoord( j,:),settings, hObject),[t,t+dt],odeVec,odeOptions); %solve ODE with 'ode23'
-  %         handles = guidata(hObject);
-  %         simulationObj.pressure = handles.simulationObj.pressure;
-  %     else
-  %         disp('5.1');
-  %         [tVec, odeAgents, TE, ~, IE] = ode23(@(t,y)odeRhs(t,y,radii,columns,wallLines,simulationObj.exitCoord( j,:),settings),[t,t+dt],odeVec,odeOptions); %solve ODE with 'ode23'
-  %         disp('TE1')
-  %         disp(TE)
-  %         disp('IE1')
-  %         disp(IE)
-  %   end
-  % end
-
-
-
 
   odeVec = reshape(agents1(:,1:4),4*NAgent1,1); %create 'odeVec' initial state column vector (with radius)
   radii = agents1(:,5);
@@ -81,6 +105,7 @@ if size(simulationObj.exitCoord,1) > 1
       [tVec, odeAgents, TE, ~, IE] = ode23(@(t,y)odeRhsWithPressure(t,y,radii,columns,wallLines,exitCoord1,settings, hObject),[t,t+dt],odeVec,odeOptions); %solve ODE with 'ode23'
       handles = guidata(hObject);
       simulationObj.pressure = handles.simulationObj.pressure;
+
   else
       disp('5.1');
       [tVec, odeAgents, TE, ~, IE] = ode23(@(t,y)odeRhs(t,y,radii,columns,wallLines,exitCoord1,settings),[t,t+dt],odeVec,odeOptions); %solve ODE with 'ode23'
@@ -96,22 +121,13 @@ if size(simulationObj.exitCoord,1) > 1
   odeOptions = odeset('AbsTol',1e-2,'RelTol',1e-2, 'Events',@(t,y) odeEventFunction(t,y,exitCoord2)); % RelTol: measure of error relative to size of each solution component. Default is 1e-3
   disp('test5.12')
   if pressureBool
-      [tVec, odeAgents2, TE, ~, IE] = ode23(@(t,y)odeRhsWithPressure(t,y,radii,columns,wallLines,exitCoord1,settings, hObject),[t,t+dt],odeVec,odeOptions); %solve ODE with 'ode23'
+      [tVec, odeAgents2, TE, ~, IE] = ode23(@(t,y)odeRhsWithPressure(t,y,radii,columns,wallLines,exitCoord2,settings, hObject),[t,t+dt],odeVec,odeOptions); %solve ODE with 'ode23'
       handles = guidata(hObject);
-      simulationObj.pressure = handles.simulationObj.pressure;
+      simulationObj.pressure = [simulationObj.pressure;  handles.simulationObj.pressure];
       disp('5.2');
   else
       [tVec, odeAgents2, TE, ~, IE] = ode23(@(t,y)odeRhs(t,y,radii,columns,wallLines,exitCoord2,settings),[t,t+dt],odeVec,odeOptions); %solve ODE with 'ode23'
   end
-  disp('TE2')
-  disp(TE)
-  disp('IE2')
-  disp(IE)
-  disp('test6')
-  %% to be changed
-  disp(size(NAgent2))
-  disp('size(NAgent2)')
-
   agents1(:,1:4) = reshape(odeAgents(end,:),NAgent1,4); %uptate 'agents' matrix
   agents2(:,1:4) = reshape(odeAgents2(end,:),NAgent2,4); %uptate 'agents' matrix
   timesAgentsThroughDoor = TE(IE <= NAgent1);
@@ -126,8 +142,7 @@ if size(simulationObj.exitCoord,1) > 1
   disp('test8')
   simulationObj.timesAgentsThroughDoor = [simulationObj.timesAgentsThroughDoor; timesAgentsThroughDoor];
 
-  %% do for agents2
-
+%IF THERE IS 1 EXIT
 else
   disp('test9')
   exitCoord = simulationObj.exitCoord
@@ -138,7 +153,6 @@ else
       [tVec, odeAgents, TE, ~, IE] = ode23(@(t,y)odeRhsWithPressure(t,y,radii,columns,wallLines,exitCoord,settings, hObject),[t,t+dt],odeVec,odeOptions); %solve ODE with 'ode23'
       handles = guidata(hObject);
       simulationObj.pressure = handles.simulationObj.pressure;
-      disp(simulationObj.pressure)
   else
       [tVec, odeAgents, TE, ~, IE] = ode23(@(t,y)odeRhs(t,y,radii,columns,wallLines,exitCoord,settings),[t,t+dt],odeVec,odeOptions); %solve ODE with 'ode23'
   end
