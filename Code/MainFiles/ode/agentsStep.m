@@ -1,4 +1,13 @@
 function [ simulationObj ] = agentsStep( simulationObj, settings, hObject)
+
+function [mp] = midpoint(arrayWith4Columns)
+  x1 = arrayWith4Columns(:, 1);
+  y1 = arrayWith4Columns(:, 2);
+  x2 = arrayWith4Columns(:, 3);
+  y2 = arrayWith4Columns(:, 4);
+  mp = [x1+x2, y1+y2]/2;
+  return
+end
 %AGENTSSTEP calculates the new agent matrix after one time step with ode23
 %   and the right hand side of the ODE of this model defined by odeRhs or
 %   odeRhsWithPressure if pressure calculations are included
@@ -15,44 +24,42 @@ NAgent = size(agents, 1); %get number of agents
 NExits = size(simulationObj.exitCoord,1);
 
 %%---ode23 integration-----------------------------------------------------
-%This will be changed with closest agent function where it separres agent to different sets and each set of agents
-%goes to the closest exit
-if NExits == 2
-  half=NAgent/2;
-  agents1 = agents(1:half,:);
-  agents2 = agents(half + 1 : 50,:);
-  NAgent1 = size(agents1, 1);
-  NAgent2 = size(agents2, 1);
-  testArray = zeros(NExits,NAgent1,5);
-  testArray(1, :, :) = agents1;
-  testArray(2, :, :) = agents2;
-elseif  NExits == 5
-  fifth=NAgent/5;
-  agents1 = agents(1:fifth,:);
-  agents2 = agents(fifth + 1 : 2*fifth,:);
-  agents3 = agents(2*fifth + 1 : 3*fifth,:);
-  agents4 = agents(3*fifth + 1 : 4*fifth,:);
-  agents5 = agents(4*fifth + 1 : 5*fifth,:);
-  NAgent1 = size(agents1, 1);
 
+agentsExitsMatrix = zeros(NExits,size(agents, 1) ,5);
+exitCoordMidPoints = midpoint(simulationObj.exitCoord);
+indexesOfClosestExit=dsearchn(exitCoordMidPoints(:,:), agents(:, 1:2) );
 
-  testArray = zeros(NExits,NAgent1,5);
-  testArray(1, :, :) = agents1;
-  testArray(2, :, :) = agents2;
-  testArray(3, :, :) = agents3;
-  testArray(4, :, :) = agents4;
-  testArray(5, :, :) = agents5;
-
-
-else
-    testArray(1,:,:) = agents;
+for i=1:NAgent
+  agentsExitsMatrix(indexesOfClosestExit(i),i,:) = agents(i,:);
 end
 
   finalAgents = [];
+
   for j = 1:NExits
+
       currentExit = simulationObj.exitCoord( j,:);
-      closestAgents = testArray(j, :, :);
+
+      % closesest agents to exit j with 0s in the array
+      closestAgents = agentsExitsMatrix(j, :, :); %testArray(j, :, :);
+
+
       NClosestAgents =  size(closestAgents,2);
+
+      % buffer to remove the zeros
+      bufferClosesetAgents = zeros(NClosestAgents,5);
+      bufferClosesetAgents = squeeze(closestAgents(1,:,:));
+      bufferClosesetAgents( all(~bufferClosesetAgents,2), : ) = [];
+      bufferSize= size(bufferClosesetAgents,1);
+
+      % change the size of the closeset agents and save the values from the buffer values.
+      closestAgents=zeros(1,bufferSize,5);
+      closestAgents(1, :, :) = bufferClosesetAgents;
+      NClosestAgents = bufferSize;
+
+      if NClosestAgents == 0
+        continue
+      end
+
 
       odeVec = reshape(closestAgents(1,:,1:4),4*NClosestAgents,1); %create 'odeVec' initial state column vector (with radius)
 
