@@ -40,16 +40,13 @@ end
     
 %% generate Walls
 % generate exit
-exitCoord = [];
-XIntersect = 0.5*(settings.yMax-settings.doorWidth)*tan(wallAngle);
-exitCoord = [xMax - border, yMax/2 - doorWidth/2, xMax - border, yMax/2 + doorWidth/2;...
-                    xMax - border, yMax/2 - doorWidth/2, (xMax - border -3), (yMax/2 + doorWidth/2 -3)];
+exitCoord = [xMax - border, yMax/2 - doorWidth/2, xMax - border, yMax/2 + doorWidth/2];
 columns = [];
 wallLines = [];
 
 XIntersect = 0.5*(settings.yMax-settings.doorWidth)*tan(wallAngle); % wall minimum in x direction
 if strcmp(settings.wallPositionStyle, 'standard')    
-%TODO COPY THIS TO GENERATE EXIT
+
     if XIntersect + border < xMax
         wallLines = [xMax - border - XIntersect, 0, xMax - border, yMax/2 - doorWidth/2;...
                     xMax - border - XIntersect, yMax, xMax - border, yMax/2 + doorWidth/2];
@@ -66,7 +63,7 @@ elseif strcmp(settings.wallPositionStyle, 'filename')
                 sum(strcmp(who('-file', settings.wallPositionFilename), 'exitCoord')) == 1
             load(settings.wallPositionFilename, 'columns', 'wallLines', 'exitCoord');
             if validateColumns(columns) && validateWallLines(wallLines) &&validateExitCoord(exitCoord)
-            else 
+            else
                 errorOpenFileGui('filename',settings.wallPositionFilename);
             end
         else

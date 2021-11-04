@@ -9,14 +9,15 @@ handles = guidata(thisfig);
 startPoint = handles.temp.startPoint;
 endPoint = get(gca,'CurrentPoint');
 endPoint = endPoint(1,[1,2]);
-%--
-newExitLine = [startPoint, endPoint];
 
-handles.simulationObj.exitCoord = [startPoint, endPoint];
+newExitLine =  [startPoint, endPoint];
+
+handles.simulationObj.exitCoord = [handles.simulationObj.exitCoord; newExitLine];
 
 % store wall id in wall drawings
-handles.plotObj.hNewExit = handles.temp.hExit;
-handles.plotObj.hExits = [handles.plotObj.hExits,hNewExit];
+hNewExitLine = handles.temp.hExit;
+handles.plotObj.hExit = [handles.plotObj.hExit,hNewExitLine];
+
 set(handles.temp.hExit(1), 'UserData', [4, handles.temp.hExit(2)]);
 set(handles.temp.hExit(2), 'UserData', [4, handles.temp.hExit(1)]);
 
@@ -26,4 +27,3 @@ handles = rmfield(handles, 'temp');
 % Update handles structure
 guidata(thisfig, handles);
 end
-

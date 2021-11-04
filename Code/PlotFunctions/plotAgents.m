@@ -9,16 +9,16 @@ ylim([0, yMax]);
 NAgents = size(agents, 1);
 NWalls = size(columns, 1);
 NWallLines = size(wallLines, 1);
-NExits =size(exitCoord,1);
+
 hAgents = zeros(1,NAgents);
 
-for j = 1:NAgents    
+for j = 1:NAgents
     hAgents(j) = plotAgentCircle(agents(j,1), agents(j,2), agents(j,5));
     set(hAgents(j), 'UserData', [1,j]);
 end
 
 hColumns = zeros(1,NWalls);
-for j = 1:NWalls    
+for j = 1:NWalls
     hColumns(j) = plotWallColumn(columns(j,1), columns(j,2), columns(j,3));
     set(hColumns(j), 'UserData', [2,j]);
 end
@@ -29,14 +29,22 @@ for j = 1:NWallLines
     set(hWallLines(j), 'UserData', [3,j]);
 end
 
-%hExit = plotExitLine([exitCoord(1), exitCoord(3)], [exitCoord(2), exitCoord(4)]);
-%set(hExit(1), 'UserData', [4, hExit(2)]);
-%set(hExit(2), 'UserData', [4, hExit(1)]);
-hExit = zeros(1, NExits);
-for j = 1:NExits
-    hExit(j) = plotExitLine([exitCoord(j,1), exitCoord(j,3)], [exitCoord(j,2), exitCoord(j,4)]);
-    set(hExit(j), 'UserData', [4,j]);
+NExitLines = size(exitCoord)
+
+for j = 1:NExitLines
+  hExit = plotExitLine([exitCoord(j, 1), exitCoord(j, 3)], [exitCoord(j, 2), exitCoord(j, 4)]);
+  set(hExit(1), 'UserData', [4, hExit(2)]);
+  set(hExit(2), 'UserData', [4, hExit(1)]);
 end
 
-end
 
+% if size(exitCoord) > 1
+%   hExit = plotExitLine([exitCoord(2, 1), exitCoord(2, 3)], [exitCoord(2, 2), exitCoord(2, 4)]);
+% else
+%   hExit = plotExitLine([exitCoord(1), exitCoord(3)], [exitCoord(2), exitCoord(4)]);
+% end
+% set(hExit(1), 'UserData', [4, hExit(2)]);
+% set(hExit(2), 'UserData', [4, hExit(1)]);
+
+
+end

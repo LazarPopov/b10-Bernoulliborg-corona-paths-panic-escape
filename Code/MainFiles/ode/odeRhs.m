@@ -1,4 +1,4 @@
-function out = odeRhs(~,odeVec,radii,columns,wallLines,exitCoord,settings) 
+function out = odeRhs(~,odeVec,radii,columns,wallLines,exitCoord,settings)
 %ODERHS returns right hand side of 1st order ODE "dv/dt = f(t,v)"
 %   where in our case f_i(t,v) = 1/m*(m*vDes/tau(desiredDirection_i - v_i)
 %                       + sum(agent interactions) + sum(wall interactions))
@@ -22,11 +22,11 @@ mass = density.*pi.*radii.^2;
 %---accelI force-----------------------------------------------------------
 
 % calculate desired, nearest x, y coordinates for each agents towards door
-
 x1Aims = repmat(exitCoord(1),NAgent,1); % x1w = wallLines(:,1);
 y1Aims = repmat(exitCoord(2),NAgent,1);% y1w = wallLines(:,2);
 x2Aims = repmat(exitCoord(3),NAgent,1);% x2w = wallLines(:,3);
 y2Aims = repmat(exitCoord(4),NAgent,1);% y2w = wallLines(:,4);
+
 
 nx = -y2Aims + y1Aims;
 ny = x2Aims - x1Aims;
@@ -115,9 +115,9 @@ if any(touching(:))
     [mesh1vY, mesh2vY] = meshgrid(agents(:,4),agents(:,4));
     velocityMatrixX = mesh1vX-mesh2vX; % velocity difference matrix in x direction
     velocityMatrixY = mesh1vY-mesh2vY; % velocity difference matrix in y direction
-    
-    body = k*deltaij.*touching;    
-    
+
+    body = k*deltaij.*touching;
+
     bodyX = body.*nxij;
     bodyY = body.*nyij;
 
@@ -128,7 +128,7 @@ if any(touching(:))
 
     forceMatrixX = forceMatrixX + bodyX + slidingX;
     forceMatrixY = forceMatrixY + bodyY + slidingY;
-    
+
 %     radialForceVec = sum(radialForceMatrix, 2);
 end
 
@@ -267,6 +267,3 @@ agentForceVecY = agentForceVecY + sum(forceMatrixY,2);
 end
 out = [odeVec(2*NAgent+1:4*NAgent);agentForceVecX./mass;agentForceVecY./mass]; % "dx/dt = v1", "dy/dt = v2"
 end
-
-
-

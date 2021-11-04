@@ -11,15 +11,10 @@ xyDiff = get(gca,'CurrentPoint') - handles.temp.startpoint;
 xyDiff = xyDiff(1,[1,2]);
 
 % update exit data
-%exitCoord = handles.simulationObj.exitCoord;
-%exitCoord([1 3]) = exitCoord([1 3]) + xyDiff(1);
-%exitCoord([2 4]) = exitCoord([2 4]) + xyDiff(2);
-%handles.simulationObj.exitCoord = exitCoord;
-hNewExit = handles.temp.hLine;
-handles.plotObj.h = [handles.plotObj.hNewExits,hNewExit];
-set(hNewExits, 'UserData', [3,length(handles.plotObj.hWallLines)]);
-
-
+exitCoord = handles.simulationObj.exitCoord;
+exitCoord([1 3]) = exitCoord([1 3]) + xyDiff(1);
+exitCoord([2 4]) = exitCoord([2 4]) + xyDiff(2);
+handles.simulationObj.exitCoord = exitCoord;
 
 % delete temporary field 'temp' in handles
 handles = rmfield(handles, 'temp');
@@ -27,4 +22,3 @@ handles = rmfield(handles, 'temp');
 % Update handles structure
 guidata(thisfig, handles);
 end
-

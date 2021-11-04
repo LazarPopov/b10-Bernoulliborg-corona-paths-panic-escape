@@ -1,17 +1,17 @@
 function varargout = arenaEditor(varargin)
 % ARENAEDITOR MATLAB code for arenaEditor.fig
-%     
 %
-%      h = ARENAEDITOR(handles) creates a new ARENAEDITOR. handles must 
+%
+%      h = ARENAEDITOR(handles) creates a new ARENAEDITOR. handles must
 %       be a cell array, containing at least the following variables
-% 
+%
 %      settings
 %      simulationObj
 %
 %      The input is passed to arenaEditor_OpeningFcn via varargin.
-%      handles will be returned in the output variable h as it was, apart 
+%      handles will be returned in the output variable h as it was, apart
 %      from the following variables which could have been changed:
-% 
+%
 %      agents
 %      columns
 %
@@ -21,7 +21,7 @@ function varargout = arenaEditor(varargin)
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
 
-% Last Modified by GUIDE v2.5 06-Oct-2021 13:45:10
+% Last Modified by GUIDE v2.5 14-Apr-2014 17:29:04
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -48,7 +48,7 @@ function arenaEditor_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with hfandles and user data (see GUIDATA)
+% handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to arenaEditor (see VARARGIN)
 handlesMain = varargin{1};
 settings = handlesMain.settings;
@@ -67,14 +67,20 @@ hAgents = plotObj.hAgents;
 hColumns = plotObj.hColumns;
 hWallLines = plotObj.hWallLines;
 hExit = plotObj.hExit;
-set([hAgents(:); hColumns(:); hWallLines(:); hExit(:)],'ButtonDownFcn', @objectButtonDown);   
+set([hAgents(:); hColumns(:); hWallLines(:); hExit(:)],'ButtonDownFcn', @objectButtonDown);
 
 % initialize some variables
 handles.currentAgentId = 0;
 handles.currentWallId = 0;
 handles.currentWallLineId = 0;
+handles.currentExitId = 0;
+%adding exit id
+
+
+
 handles.settings = settings;
 handles.simulationObj = simulationObj;
+
 handles.plotObj = plotObj;
 handles.handlesMain = handlesMain;
 handles.oldTool = 'modifyObjectTool';
@@ -91,7 +97,7 @@ uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = arenaEditor_OutputFcn(hObject, eventdata, handles) 
+function varargout = arenaEditor_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -118,7 +124,7 @@ handles.lastValidEditValues = lastValidEditValues;
 function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handlecs and user data (see GUIDATA)
+% handles    structure with handles and user data (see GUIDATA)
 
 cancelProcedure(hObject, handles);
 
@@ -190,7 +196,7 @@ function saveWallsAsMenu_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 columns = handles.simulationObj.columns;
 wallLines = handles.simulationObj.wallLines;
-exitCoord = handles.simulationObj.exitCoord;
+exitCoord = handles.simulationObj.exitCoord(1, :);
 [filename, pathname, FilterIndex] = uiputfile('*.mat', 'Save walls as...', './presets/walls.mat');
 if (FilterIndex ~= 0)
     save([pathname, filename], 'columns', 'wallLines', 'exitCoord');
@@ -209,12 +215,12 @@ if filterIndex ~= 0
             handles.simulationObj.agents = agents;
             delete(handles.plotObj.hAgents);
             hAgents = zeros(1, size(agents, 1));
-            for j = 1:length(hAgents) 
+            for j = 1:length(hAgents)
                 hAgents(j) = plotAgentCircle(agents(j,1), agents(j,2), agents(j,5));
                 set(hAgents(j), 'UserData', [1,j]);
             end
             if strcmp(handles.oldTool, 'modifyObjectTool')
-                set(hAgents(:),'ButtonDownFcn', @objectButtonDown);   
+                set(hAgents(:),'ButtonDownFcn', @objectButtonDown);
             end
             handles.plotObj.hAgents = hAgents;
             guidata(hObject, handles);
@@ -238,7 +244,7 @@ if filterIndex ~= 0
             sum(strcmp(who('-file', [pathName, fileName]), 'wallLines')) == 1 && ...
             sum(strcmp(who('-file', [pathName, fileName]), 'exitCoord')) == 1
         load([pathName, fileName], 'columns', 'wallLines', 'exitCoord');
-        if validateColumns(columns) && validateWallLines(wallLines) &&validateExitCoord(exitCoord)
+        if validateColumns(columns) && validateWallLines(wallLines) && validateExitCoord(exitCoord)
             handles.simulationObj.columns = columns;
             handles.simulationObj.wallLines = wallLines;
             handles.simulationObj.exitCoord = exitCoord;
@@ -246,38 +252,39 @@ if filterIndex ~= 0
             delete(handles.plotObj.hWallLines);
             delete(handles.plotObj.hExit);
             hColumns = zeros(1, size(columns, 1));
-            for j = 1:length(hColumns) 
+            for j = 1:length(hColumns)
                 hColumns(j) = plotWallColumn(columns(j,1), columns(j,2), columns(j,3));
                 set(hColumns(j), 'UserData', [2,j]);
             end
             handles.plotObj.hColumns = hColumns;
             NWallLines = size(wallLines, 1);
             hWallLines = zeros(1, NWallLines);
-            for j = 1:NWallLines
-                hWallLines(j) = plotWallLine([wallLines(j,1), wallLines(j,3)], [wallLines(j,2), wallLines(j,4)]);
-                set(hWallLines(j), 'UserData', [3,j]);
+
+            NExitLines = size(exitCoord, 1)
+
+            for j = 1:NExitLines
+              hExit = plotExitLine([exitCoord(j, 1), exitCoord(j, 3)], [exitCoord(j, 2), exitCoord(j, 4)]);
+              set(hExit(1), 'UserData', [4, hExit(2)]);
+              set(hExit(2), 'UserData', [4, hExit(1)]);
             end
 
-            handles.plotObj.hWallLines = hWallLines;
 
-            NExit = size(exitCoord, 1);
-            hExit = zeros(1, NExit);
-            for j = 1:NExit
-                hExit(j) = plotExitLine([exitCoord(j,1), exitCoord(j,3)], [exitCoord(j,2), exitCoord(j,4)]);
-                set(hExit(j), 'UserData', [4,j]);
-            end
+            % if size(exitCoord) > 1
+            %   hExit = plotExitLine([exitCoord(2, 1), exitCoord(2, 3)], [exitCoord(2, 2), exitCoord(2, 4)]);
+            % else
+            %   hExit = plotExitLine([exitCoord(1), exitCoord(3)], [exitCoord(2), exitCoord(4)]);
+            % end
+            % set(hExit(1), 'UserData', [4, hExit(2)]);
+            % set(hExit(2), 'UserData', [4, hExit(1)]);
 
-            handles.plotObj.hExit= hExit;
 
-            
-            
-            
-            %hExit = plotExitLine([exitCoord(1), exitCoord(3)], [exitCoord(2), exitCoord(4)]);
-            %set(hExit(1), 'UserData', [4, hExit(2)]);
-           % set(hExit(2), 'UserData', [4, hExit(1)]);
-            
+
+
+
+
+
             if strcmp(handles.oldTool, 'modifyObjectTool')
-                set([hColumns(:); hWallLines(:); hExit(:)],'ButtonDownFcn', @objectButtonDown);   
+                set([hColumns(:); hWallLines(:); hExit(:)],'ButtonDownFcn', @objectButtonDown);
             end
 
             guidata(hObject, handles);
@@ -374,7 +381,7 @@ function agentVelocityEdit_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% sets the typed in number as the current velocity of the clicked agent if 
+% sets the typed in number as the current velocity of the clicked agent if
 % any
 [num, sucess] = validateStr(get(hObject,'String'), 'double', [0,inf]);
 if sucess
@@ -388,7 +395,7 @@ currentAgentId = handles.currentAgentId;
 if currentAgentId ~= 0
     velocity = num;
     angle = str2double(get(handles.agentDirectionEdit,'String'))*2*pi/360;
-    
+
     handles.simulationObj.agents(currentAgentId, 3) = velocity*cos(angle);
     handles.simulationObj.agents(currentAgentId, 4) = velocity*sin(angle);
     guidata(hObject, handles);
@@ -411,7 +418,7 @@ function agentDirectionEdit_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% sets the typed in number as the current angle of direction 
+% sets the typed in number as the current angle of direction
 % of the clicked agent if any
 
 [num, sucess] = validateStr(get(hObject,'String'), 'double', [0,360]);
@@ -427,7 +434,7 @@ currentAgentId = handles.currentAgentId;
 if currentAgentId ~= 0
     velocity = str2double(get(handles.agentVelocityEdit,'String'));
     angle = str2double(get(hObject,'String'))*pi/180;
-    
+
     handles.simulationObj.agents(currentAgentId, 3) = velocity*cos(angle);
     handles.simulationObj.agents(currentAgentId, 4) = velocity*sin(angle);
     guidata(hObject, handles);
@@ -464,7 +471,7 @@ if currentWallId ~= 0
     columns = handles.simulationObj.columns;
     radius = num;
     columns(currentWallId, 3) = radius;
-    hWall = handles.plotObj.hColumns(currentWallId);   
+    hWall = handles.plotObj.hColumns(currentWallId);
     x = columns(currentWallId, 1);
     y = columns(currentWallId, 2);
     set(hWall, 'Position', [x-radius, y-radius, 2*radius, 2*radius]);
@@ -520,12 +527,12 @@ elseif strcmp(eventdata.Key, 'delete')
     currentAgentId = handles.currentAgentId;
     currentWallId = handles.currentWallId;
     currentWallLineId = handles.currentWallLineId;
-    if currentAgentId ~= 0   
+    if currentAgentId ~= 0
         agents = handles.simulationObj.agents;
         currentAgentHandle = handles.plotObj.hAgents(currentAgentId);
         % delete all traces of agent
         delete(currentAgentHandle);
-        agents(currentAgentId,:) = [];    
+        agents(currentAgentId,:) = [];
         handles.plotObj.hAgents(currentAgentId) = [];
         for j = (currentAgentId):length(handles.plotObj.hAgents);
             set(handles.plotObj.hAgents(j), 'UserData', [1,j]);
@@ -538,7 +545,7 @@ elseif strcmp(eventdata.Key, 'delete')
         currentWallHandle = handles.plotObj.hColumns(currentWallId);
         % delete all traces of wall
         delete(currentWallHandle);
-        columns(currentWallId,:) = [];    
+        columns(currentWallId,:) = [];
         handles.plotObj.hColumns(currentWallId) = [];
         for j = (currentWallId):length(handles.plotObj.hColumns);
             set(handles.plotObj.hColumns(j), 'UserData', [2,j]);
@@ -552,7 +559,7 @@ elseif strcmp(eventdata.Key, 'delete')
         currentWallLineHandle = handles.plotObj.hWallLines(currentWallLineId);
         % delete all traces of wall line
         delete(currentWallLineHandle);
-        wallLines(currentWallLineId,:) = [];    
+        wallLines(currentWallLineId,:) = [];
         handles.plotObj.hWallLines(currentWallLineId) = [];
         for j = (currentWallLineId):length(handles.plotObj.hWallLines);
             set(handles.plotObj.hWallLines(j), 'UserData', [3,j]);
@@ -594,13 +601,13 @@ end
 function changeTool(hObject, handles, newTool)
 oldTool = handles.oldTool;
 % tidy up the mess from before
-switch oldTool     
+switch oldTool
     case 'newAgentTool'
         hCells = handles.plotObj.hCells;
-        set(hCells, 'ButtonDownFcn', '');      
+        set(hCells, 'ButtonDownFcn', '');
     case 'newColumnTool'
         hCells = handles.plotObj.hCells;
-        set(hCells, 'ButtonDownFcn', '');        
+        set(hCells, 'ButtonDownFcn', '');
     case 'lineOfColumnsTool'
         hCells = handles.plotObj.hCells;
         set(hCells, 'ButtonDownFcn', '');
@@ -609,16 +616,16 @@ switch oldTool
         set(hCells, 'ButtonDownFcn', '');
     case 'newWallTool'
         hCells = handles.plotObj.hCells;
-        set(hCells, 'ButtonDownFcn', ''); 
+        set(hCells, 'ButtonDownFcn', '');
     case 'newExitTool'
         hCells = handles.plotObj.hCells;
-        set(hCells, 'ButtonDownFcn', ''); 
+        set(hCells, 'ButtonDownFcn', '');
     case 'modifyObjectTool'
         hAgents = handles.plotObj.hAgents;
         hColumns = handles.plotObj.hColumns;
         hWallLines = handles.plotObj.hWallLines;
         hExit = handles.plotObj.hExit;
-        set([hAgents(:); hColumns(:); hWallLines(:); hExit(:)],'ButtonDownFcn',''); 
+        set([hAgents(:); hColumns(:); hWallLines(:); hExit(:)],'ButtonDownFcn','');
 end
 % some general tidying up
 set(handles.infoText, 'String', ...
@@ -642,47 +649,47 @@ switch newTool
         set(handles.agentRadiusEdit, 'enable', 'on');
         set(handles.agentVelocityEdit, 'enable', 'on');
         set(handles.agentDirectionEdit, 'enable', 'on');
-        
+
         hCells = handles.plotObj.hCells;
-        set(hCells, 'ButtonDownFcn', @newAgentButtonDown);     
-    case 'newColumnTool'        
+        set(hCells, 'ButtonDownFcn', @newAgentButtonDown);
+    case 'newColumnTool'
         set(handles.infoText, 'String', ...
             '   Click to place new column.');
         set(handles.wallRadiusEdit, 'enable', 'on');
-        
+
         hCells = handles.plotObj.hCells;
-        set(hCells, 'ButtonDownFcn', @newColumnButtonDown);        
+        set(hCells, 'ButtonDownFcn', @newColumnButtonDown);
     case 'lineOfColumnsTool'
         set(handles.infoText, 'String', ...
             '   Click and drag to draw new line of columns.');
         set(handles.wallRadiusEdit, 'enable', 'on');
-        
-        hCells = handles.plotObj.hCells;    
+
+        hCells = handles.plotObj.hCells;
         set(hCells, 'ButtonDownFcn', @lineOfColumnsButtonDown);
     case 'circleOfColumnsTool'
         set(handles.infoText, 'String', ...
             '   Click and drag to draw new circle of columns.');
-        set(handles.wallRadiusEdit, 'enable', 'on');        
-        hCells = handles.plotObj.hCells;    
+        set(handles.wallRadiusEdit, 'enable', 'on');
+        hCells = handles.plotObj.hCells;
         set(hCells, 'ButtonDownFcn', @circleOfColumnsButtonDown);
-    case 'newWallTool'   
+    case 'newWallTool'
         set(handles.infoText, 'String', ...
             '   Click and drag to draw new wall.');
-        hCells = handles.plotObj.hCells;    
+        hCells = handles.plotObj.hCells;
         set(hCells, 'ButtonDownFcn', @newWallLineButtonDown);
-    case 'newExitTool'   
+    case 'newExitTool'
         set(handles.infoText, 'String', ...
             '   Click and drag to draw new exit line.');
-        hCells = handles.plotObj.hCells;    
+        hCells = handles.plotObj.hCells;
         set(hCells, 'ButtonDownFcn', @newExitLineButtonDown);
-    case 'modifyObjectTool'        
+    case 'modifyObjectTool'
         set(handles.infoText, 'String', ...
             '   Left click: move object   Right click: delete object');
         hAgents = handles.plotObj.hAgents;
         hColumns = handles.plotObj.hColumns;
         hWallLines = handles.plotObj.hWallLines;
         hExit = handles.plotObj.hExit;
-        set([hAgents(:); hColumns(:); hWallLines(:); hExit(:)],'ButtonDownFcn', @objectButtonDown);   
+        set([hAgents(:); hColumns(:); hWallLines(:); hExit(:)],'ButtonDownFcn', @objectButtonDown);
 end
 handles.oldTool = newTool;
 guidata(hObject, handles);
@@ -690,7 +697,7 @@ guidata(hObject, handles);
 function allOtherToolsOff(hObject,handles)
 set(handles.hAllTools, 'State', 'off');
 set(hObject, 'State', 'on');
-    
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % other ui
